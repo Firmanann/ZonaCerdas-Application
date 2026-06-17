@@ -1,4 +1,4 @@
-POST /auth/register
+POST /auth/register [DONE]
 - Request Body :
   {
   "name": "Budi Santoso",
@@ -19,7 +19,7 @@ POST /auth/register
       }
     }
 ---
-POST /auth/login
+POST /auth/login [DONE]
 - Request :
   {
   "email": "budi.santoso@sekolah.sch.id",
@@ -41,7 +41,7 @@ POST /auth/login
   }
   }
 ---
-POST /auth/logout
+POST /auth/logout [DONE]
 - Mencabut refresh token yang aktif 
 - Header: `Authorization: Bearer <token>`
 - Request: Tidak ada body
