@@ -1,6 +1,8 @@
 package com.demisnack.Eduplay.Application.auth.controller;
 
 
+import com.demisnack.Eduplay.Application.auth.dto.LoginRequest;
+import com.demisnack.Eduplay.Application.auth.dto.LoginResponse;
 import com.demisnack.Eduplay.Application.auth.dto.RegisterRequest;
 import com.demisnack.Eduplay.Application.auth.dto.RegisterResponse;
 import com.demisnack.Eduplay.Application.auth.service.AuthService;
@@ -38,6 +40,24 @@ public class AuthController {
 
         // Return status 201 Created
         return ResponseEntity.status(HttpStatus.CREATED).body(response);
+    }
+
+    //catch login endpoint
+    @PostMapping("/login")
+    public ResponseEntity<GlobalResponse<LoginResponse>> login(
+            @Valid @RequestBody LoginRequest request
+    ) {
+        // Eksekusi logic login di service
+        LoginResponse responseData = authService.login(request);
+
+        // Bungkus output ke dalam format GlobalResponse standar
+        GlobalResponse<LoginResponse> response = GlobalResponse.<LoginResponse>builder()
+                .success(true)
+                .data(responseData)
+                .build();
+
+        // Return dengan status 200 OK
+        return ResponseEntity.ok(response);
     }
 
 }

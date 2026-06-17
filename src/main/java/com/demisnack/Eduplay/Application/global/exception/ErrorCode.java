@@ -11,9 +11,9 @@ public enum ErrorCode {
     EMAIL_FORMAT(HttpStatus.BAD_REQUEST, "Email format not valid"),
     PASSWORD_SIZE(HttpStatus.BAD_REQUEST, "Password must be at least 8 characters"),
     EMAIL_EXISTS(HttpStatus.CONFLICT, "Email sudah digunakan"), // 409 Conflict standar untuk duplikasi data
-    ROLE_NOT_FOUND(HttpStatus.NOT_FOUND, "Roles tidak ditemukan");
-
-
+    ROLE_NOT_FOUND(HttpStatus.NOT_FOUND, "Roles tidak ditemukan"),
+    EMAIL_NOT_FOUND(HttpStatus.NOT_FOUND, "Email tidak terdaftar"),
+    EMAIL_PASSWORD_INVALID(HttpStatus.UNAUTHORIZED, "Email atau Password salah"); // 401 Unauthorized untuk gagal login
 
 
     private final HttpStatus httpStatus;
