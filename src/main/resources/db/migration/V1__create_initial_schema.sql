@@ -1,16 +1,23 @@
--- 1. Table Users (Domain: Auth)
+-- 1. Table Roles (Domain: Auth)
+CREATE TABLE roles (
+    id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+    name VARCHAR(50) UNIQUE NOT NULL,
+    description VARCHAR(255)
+);
+
+-- 2. Table Users (Domain: Auth)
 CREATE TABLE users (
     id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+    role_id UUID NOT NULL,
     name VARCHAR(255) NOT NULL,
     email VARCHAR(255) UNIQUE NOT NULL,
     password VARCHAR(255) NOT NULL,
-    role VARCHAR(50) NOT NULL,
     country VARCHAR(2) DEFAULT 'ID',
-
-    created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
+    created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
+    CONSTRAINT fk_user_role FOREIGN KEY (role_id) REFERENCES roles(id) ON DELETE RESTRICT
 );
 
--- 2. Table Generated Games (Domain: Generator)
+-- 3. Table Generated Games (Domain: Generator)
 CREATE TABLE generated_games (
     id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
     user_id UUID NOT NULL,
@@ -19,11 +26,10 @@ CREATE TABLE generated_games (
     html_content TEXT,
     download_url TEXT,
     created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
-
     CONSTRAINT fk_user_game FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
 );
 
--- 3. Table Contents (Domain: Catalog / Contributor)
+-- 4. Table Contents (Domain: Catalog / Contributor)
 CREATE TABLE contents (
     id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
     contributor_id UUID NOT NULL,
@@ -32,11 +38,16 @@ CREATE TABLE contents (
     description TEXT,
     pricing VARCHAR(20) NOT NULL,
     status VARCHAR(50) NOT NULL DEFAULT 'APPROVED',
-    subject VARCHAR(50),      -- (Misal: ipa, matematika)
-    grade_level VARCHAR(20),  -- (Misal: SD, SMP, SMA)
-    file_url TEXT,            -- (URL file .html / .pdf)
-    thumbnail_url TEXT,       -- (URL gambar cover)
+    subject VARCHAR(50),
+    grade_level VARCHAR(20),
+    file_url TEXT,
+    thumbnail_url TEXT,
     created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
-
     CONSTRAINT fk_contributor_content FOREIGN KEY (contributor_id) REFERENCES users(id) ON DELETE CASCADE
 );
+
+-- Insert Default Roles (Opsional, untuk seeding awal)
+INSERT INTO roles (name, description) VALUES
+('ROLE_USER', 'Guru pengguna umum'),
+('ROLE_CONTRIBUTOR', 'Kreator konten marketplace'),
+('ROLE_ADMIN', 'Administrator sistem');
