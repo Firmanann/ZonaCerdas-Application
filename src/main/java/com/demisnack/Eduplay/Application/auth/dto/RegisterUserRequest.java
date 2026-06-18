@@ -26,10 +26,4 @@ public class RegisterRequest {
     @Size(min = 8, message = "PASSWORD_SIZE")
     private String password;
 
-    @NotBlank(message = "Role tidak boleh kosong")
-    private String role;
-
-    @Builder.Default
-    private String country = "ID";
-
 }
