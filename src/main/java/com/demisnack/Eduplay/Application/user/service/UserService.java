@@ -1,10 +1,10 @@
 package com.demisnack.Eduplay.Application.user.service;
 
-import com.demisnack.Eduplay.Application.auth.dto.RegisterRequest;
+import com.demisnack.Eduplay.Application.auth.dto.RegisterUserRequest;
+import com.demisnack.Eduplay.Application.auth.dto.RegisterContributorRequest;
 import com.demisnack.Eduplay.Application.global.exception.BusinessException;
 import com.demisnack.Eduplay.Application.global.exception.ErrorCode;
 import com.demisnack.Eduplay.Application.roles.entity.RolesEntity;
-import com.demisnack.Eduplay.Application.roles.entity.RolesStatus;
 import com.demisnack.Eduplay.Application.roles.repository.RolesRepository;
 import com.demisnack.Eduplay.Application.security.service.PasswordService;
 import com.demisnack.Eduplay.Application.user.entity.UserEntity;
@@ -30,30 +30,56 @@ public class UserService {
     }
 
     @Transactional
-    public UserEntity createUser(RegisterRequest request) {
+    public UserEntity createUser(RegisterUserRequest request) {
 
-        // 1. Validasi ketersediaan email
+        //Validasi ketersediaan email
         validateEmailAvailability(request.getEmail());
 
-        // 2. Cari role berdasarkan input string
-        RolesEntity userRole = roleRepo.findByStatus(request.getRole())
+        //Cari role USER
+        RolesEntity userRole = roleRepo.findByStatus("USER")
                 .orElseThrow(() -> new BusinessException(ErrorCode.ROLE_NOT_FOUND));
 
-        // 3. Hash Password menggunakan passwordEncoder bawaan SecurityConfig
+        // Hash Password
         String hashedPassword = passwordService.hashPassword(request.getPassword());
 
-        // 4. Membuat objek baru dan set data sesuai field EduPlay
+        //Desain objek
         UserEntity newUser = UserEntity.builder()
                 .name(request.getName())
                 .email(request.getEmail())
-
                 .password(hashedPassword)
                 .role(userRole)
-                .country(request.getCountry())
+
+                .balance(100000)
                 .build();
 
         return userRepo.save(newUser);
     }
 
+    //2.Method untuk Register Contributor
+    @Transactional
+    public UserEntity createContributor(RegisterContributorRequest request) {
 
+        //Validasi ketersediaan email
+        validateEmailAvailability(request.getEmail());
+
+        //Cari role CONTRIBUTOR
+        RolesEntity contributorRole = roleRepo.findByStatus("CONTRIBUTOR")
+                .orElseThrow(() -> new BusinessException(ErrorCode.ROLE_NOT_FOUND));
+
+        //Hash Password
+        String hashedPassword = passwordService.hashPassword(request.getPassword());
+
+        //Membuat objek baru, plus masukin data bank
+        UserEntity newUser = UserEntity.builder()
+                .name(request.getName())
+                .email(request.getEmail())
+                .password(hashedPassword)
+                .role(contributorRole)
+                .portofolio(request.getPortofolio())
+                .bankName(request.getBankName())
+                .bankAccount(request.getBankAccount())
+                .build();
+
+        return userRepo.save(newUser);
+    }
 }

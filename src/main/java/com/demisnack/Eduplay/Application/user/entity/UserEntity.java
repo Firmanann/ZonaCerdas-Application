@@ -20,7 +20,6 @@ public class UserEntity {
     @GeneratedValue(strategy = GenerationType.UUID)
     private UUID id;
 
-    // Relasi Many-to-One ke tabel Roles
     @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "role_id", nullable = false)
     private RolesEntity role;
@@ -34,9 +33,17 @@ public class UserEntity {
     @Column(nullable = false)
     private String password;
 
-    @Column(length = 2)
+    private String portofolio;
+
+    @Column(nullable = false)
     @Builder.Default
-    private String country = "ID";
+    private Integer balance = 0;
+
+    @Column(name = "bank_name", length = 50)
+    private String bankName;
+
+    @Column(name = "bank_account", length = 50)
+    private String bankAccount;
 
     @CreationTimestamp
     @Column(name = "created_at", updatable = false)

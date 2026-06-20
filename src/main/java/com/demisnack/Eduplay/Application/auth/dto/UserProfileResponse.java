@@ -18,8 +18,8 @@ public class UserProfileResponse {
     private String name;
     private String email;
     private String role;
-    private String country;
-    private String currency;
+    private Integer balance;
+    private String bankName;
+    private String bankAccount;
     private OffsetDateTime createdAt;
-
 }

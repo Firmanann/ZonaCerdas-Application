@@ -2,7 +2,6 @@ package com.demisnack.Eduplay.Application.user.repository;
 
 import com.demisnack.Eduplay.Application.user.entity.UserEntity;
 import org.springframework.data.jpa.repository.JpaRepository;
-
 import java.util.Optional;
 import java.util.UUID;
 

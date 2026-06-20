@@ -1,6 +1,5 @@
 package com.demisnack.Eduplay.Application.auth.controller;
 
-
 import com.demisnack.Eduplay.Application.auth.dto.*;
 import com.demisnack.Eduplay.Application.auth.service.AuthService;
 import com.demisnack.Eduplay.Application.global.response.GlobalResponse;
@@ -21,51 +20,68 @@ public class AuthController {
         this.authService = authService;
     }
 
-    //catch register endpoint
-    @PostMapping("/register")
-    public ResponseEntity<GlobalResponse<RegisterResponse>> register (@Valid @RequestBody RegisterRequest request) {
+    //Endpoint Register User Biasa
+    @PostMapping("/register/user")
+    public ResponseEntity<GlobalResponse<Void>> register (@Valid @RequestBody RegisterUserRequest request) {
 
         // Eksekusi logic register di service
-        RegisterResponse responseData = authService.register(request);
+        authService.register(request);
 
-        // Desain format GlobalResponse standar
-        GlobalResponse<RegisterResponse> response = GlobalResponse.<RegisterResponse>builder()
+        // Desain format GlobalResponse standar dengan data null
+        GlobalResponse<Void> response = GlobalResponse.<Void>builder()
                 .success(true)
-                .data(responseData)
+                .data(null)
                 .build();
 
         // Return status 201 Created
         return ResponseEntity.status(HttpStatus.CREATED).body(response);
     }
 
-    //catch login endpoint
+    //Endpoint Register Contributor
+    @PostMapping("/register/contributor")
+    public ResponseEntity<GlobalResponse<Void>> registerContributor (@Valid @RequestBody RegisterContributorRequest request) {
+
+        // Eksekusi logic register khusus kreator
+        authService.registerContributor(request);
+
+        // Desain format GlobalResponse standar dengan data null
+        GlobalResponse<Void> response = GlobalResponse.<Void>builder()
+                .success(true)
+                .data(null)
+                .build();
+
+        // Return status 201 Created
+        return ResponseEntity.status(HttpStatus.CREATED).body(response);
+    }
+
+    //Endpoint Login
     @PostMapping("/login")
-    public ResponseEntity<GlobalResponse<LoginResponse>> login(
-            @Valid @RequestBody LoginRequest request
-    ) {
+    public ResponseEntity<GlobalResponse<LoginResponse>> login(@Valid @RequestBody LoginRequest request) {
+
         // Eksekusi logic login di service
         LoginResponse responseData = authService.login(request);
 
-        // Bungkus output ke dalam format GlobalResponse standar
+        // Desain GlobalResponse standar
         GlobalResponse<LoginResponse> response = GlobalResponse.<LoginResponse>builder()
                 .success(true)
                 .data(responseData)
                 .build();
 
-        // Return dengan status 200 OK
+        // Return 200 OK
         return ResponseEntity.ok(response);
     }
 
+    //Endpoint Logout
     @PostMapping("/logout")
     public ResponseEntity<Void> logout() {
-
         return ResponseEntity.noContent().build();
     }
 
+    //Endpoint Get Me (Profil)
     @GetMapping("/me")
     public ResponseEntity<GlobalResponse<UserProfileResponse>> getMe(Principal principal) {
 
-        //Principal = email user
+        // Principal = email user
         UserProfileResponse responseData = authService.getMe(principal.getName());
 
         GlobalResponse<UserProfileResponse> response = GlobalResponse.<UserProfileResponse>builder()
@@ -75,5 +91,4 @@ public class AuthController {
 
         return ResponseEntity.ok(response);
     }
-
 }
