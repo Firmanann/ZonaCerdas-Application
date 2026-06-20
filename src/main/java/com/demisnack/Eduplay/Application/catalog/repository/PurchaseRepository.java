@@ -1,6 +1,5 @@
 package com.demisnack.Eduplay.Application.catalog.repository;
 
-import com.demisnack.Eduplay.Application.catalog.entity.CatalogEntity;
 import com.demisnack.Eduplay.Application.catalog.entity.PurchaseEntity;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;

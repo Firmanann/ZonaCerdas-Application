@@ -39,7 +39,7 @@ public class UserService {
         RolesEntity userRole = roleRepo.findByStatus("USER")
                 .orElseThrow(() -> new BusinessException(ErrorCode.ROLE_NOT_FOUND));
 
-        // Hash Password
+        //Hash Password
         String hashedPassword = passwordService.hashPassword(request.getPassword());
 
         //Desain objek

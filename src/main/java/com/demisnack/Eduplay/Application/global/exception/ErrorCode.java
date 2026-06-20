@@ -10,10 +10,10 @@ public enum ErrorCode {
     PASSWORD_REQUIRED(HttpStatus.BAD_REQUEST, "Password wajib diisi"),
     EMAIL_FORMAT(HttpStatus.BAD_REQUEST, "Email format not valid"),
     PASSWORD_SIZE(HttpStatus.BAD_REQUEST, "Password must be at least 8 characters"),
-    EMAIL_EXISTS(HttpStatus.CONFLICT, "Email sudah digunakan"), // 409 Conflict standar untuk duplikasi data
+    EMAIL_EXISTS(HttpStatus.CONFLICT, "Email sudah digunakan"),
     ROLE_NOT_FOUND(HttpStatus.NOT_FOUND, "Roles tidak ditemukan"),
     EMAIL_NOT_FOUND(HttpStatus.NOT_FOUND, "Email tidak terdaftar"),
-    EMAIL_PASSWORD_INVALID(HttpStatus.UNAUTHORIZED, "Email atau Password salah"), // 401 Unauthorized untuk gagal login
+    EMAIL_PASSWORD_INVALID(HttpStatus.UNAUTHORIZED, "Email atau Password salah"),
 
     // Error untuk Catalog & Library
     GAME_NOT_FOUND(HttpStatus.NOT_FOUND, "Game tidak ditemukan"),

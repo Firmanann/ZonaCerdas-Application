@@ -2,7 +2,6 @@ package com.demisnack.Eduplay.Application.catalog.entity;
 
 import jakarta.persistence.*;
 import lombok.*;
-import java.time.LocalDateTime;
 import java.time.OffsetDateTime;
 import java.util.UUID;
 

@@ -26,11 +26,11 @@ public class ContributorService {
 
     public void createContent(CreateContentRequest request, String email) {
 
-        // 1. Cari data kreator yang lagi login
+        // 1.Cari data kreator
         UserEntity contributor = userRepository.findByEmail(email)
                 .orElseThrow(() -> new BusinessException(ErrorCode.USER_NOT_FOUND));
 
-        // 2. Mapping request ke Entity Database
+        // 2.Mapping request - entity - db
         CatalogEntity newContent = CatalogEntity.builder()
                 .title(request.getTitle())
                 .description(request.getDescription())
@@ -40,23 +40,23 @@ public class ContributorService {
                 .category(request.getCategory())
                 .subject(request.getSubject())
                 .gradeLevel(request.getGradeLevel())
-                .contributor(contributor) // Set relasi ke user yang bikin
+                .contributor(contributor)
                 .build();
 
-        // 3. Save ke tabel catalogs
+        // 3.Save ke tabel catalogs
         catalogRepository.save(newContent);
     }
 
     public List<MyContentResponse> getMyContents(String email) {
 
-        // 1. Cari data kreator
+        // 1.Cari data kreator
         UserEntity contributor = userRepository.findByEmail(email)
                 .orElseThrow(() -> new BusinessException(ErrorCode.USER_NOT_FOUND));
 
-        // 2. Tarik semua game buatan dia dari database
+        // 2.Ambil semua data dari db
         List<CatalogEntity> myContents = catalogRepository.findAllByContributorId(contributor.getId());
 
-        // 3. Mapping ke response
+        // 3.Mapping response
         return myContents.stream().map(catalog -> MyContentResponse.builder()
                 .id(catalog.getId().toString())
                 .title(catalog.getTitle())
@@ -67,89 +67,88 @@ public class ContributorService {
 
     @Transactional
     public void updateContent(String catalogId, UpdateContentRequest request, String email) {
-        // 1. Cari data kreator
+        //1.Cari data kreator
         UserEntity contributor = userRepository.findByEmail(email)
                 .orElseThrow(() -> new BusinessException(ErrorCode.USER_NOT_FOUND));
 
-        // 2. Cari game yang mau diedit
+        //2. Cari game
         CatalogEntity catalog = catalogRepository.findById(UUID.fromString(catalogId))
                 .orElseThrow(() -> new BusinessException(ErrorCode.GAME_NOT_FOUND));
 
-        // 3. Validasi Keamanan: Pastikan yang ngedit adalah pemilik asli gamenya!
+        //3.Validasi contributor
         if (!catalog.getContributor().getId().equals(contributor.getId())) {
-            throw new BusinessException(ErrorCode.NOT_OWNED); // Kita pakai error yang sama kayak di library aja
+            throw new BusinessException(ErrorCode.NOT_OWNED);
         }
 
-        // 4. Timpa data lama dengan data baru
+        //4.Update data lama
         catalog.setTitle(request.getTitle());
         catalog.setDescription(request.getDescription());
         catalog.setPrice(request.getPrice());
 
-        // 5. Save (sebenernya otomatis tersave karena ada @Transactional, tapi biar eksplisit aja)
+        //5.save data
         catalogRepository.save(catalog);
     }
 
     @Transactional
     public void deleteContent(String catalogId, String email) {
-        // 1. Cari data kreator
+
+        //1.cari data kreator
         UserEntity contributor = userRepository.findByEmail(email)
                 .orElseThrow(() -> new BusinessException(ErrorCode.USER_NOT_FOUND));
 
-        // 2. Cari game yang mau dihapus
+        //2.cari game
         CatalogEntity catalog = catalogRepository.findById(UUID.fromString(catalogId))
                 .orElseThrow(() -> new BusinessException(ErrorCode.GAME_NOT_FOUND));
 
-        // 3. Validasi Keamanan: Pastikan yang ngehapus adalah pemilik asli gamenya!
+        //3.validasi contributor
         if (!catalog.getContributor().getId().equals(contributor.getId())) {
             throw new BusinessException(ErrorCode.NOT_OWNED);
         }
 
-        // 4. Hapus dari database
+        //4.hapus dari database
         catalogRepository.delete(catalog);
     }
 
     public BalanceResponse getBalance(String email) {
 
-        // 1. Cari data user yang lagi login
+        //cari data user
         UserEntity contributor = userRepository.findByEmail(email)
                 .orElseThrow(() -> new BusinessException(ErrorCode.USER_NOT_FOUND));
 
-        // 2. Mapping data saldo dan bank ke DTO
+        //mapping data response
         return BalanceResponse.builder()
                 .balance(contributor.getBalance())
-                .bankName(contributor.getBankName()) // Pastikan field ini ada di UserEntity
-                .bankAccount(contributor.getBankAccount()) // Pastikan field ini ada di UserEntity
+                .bankName(contributor.getBankName())
+                .bankAccount(contributor.getBankAccount())
                 .build();
     }
 
     public List<TransactionResponse> getTransactions(String email) {
 
-        // 1. Cari data kreator
+        //1.cari data kreator
         UserEntity contributor = userRepository.findByEmail(email)
                 .orElseThrow(() -> new BusinessException(ErrorCode.USER_NOT_FOUND));
 
-        // 2. Tarik semua game buatan kreator ini
+        //2.tarik semua game buatan kreator ini
         List<CatalogEntity> myContents = catalogRepository.findAllByContributorId(contributor.getId());
 
-        // Ambil ID game-gamenya aja untuk pencarian
+        //3.ambil semua id game
         List<UUID> contentIds = myContents.stream().map(CatalogEntity::getId).toList();
-
-        // Kalau belum punya game sama sekali, langsung return list kosong
         if (contentIds.isEmpty()) {
             return List.of();
         }
 
-        // 3. Tarik semua struk pembelian yang contentId-nya ada di list tadi
+        //4.mapper catalog - purchase
         List<PurchaseEntity> purchases = purchaseRepository.findAllByContentIdIn(contentIds);
 
-        // 4. Mapping data ke Response DTO
+        //5.mapping DTO
         return purchases.stream().map(purchase -> {
 
-            // Cari data pembeli (buyer)
+            //cari data buyer
             UserEntity buyer = userRepository.findById(purchase.getUserId())
                     .orElseThrow(() -> new BusinessException(ErrorCode.USER_NOT_FOUND));
 
-            // Cocokin judul game dari data myContents yang udah ditarik di langkah 2
+            //validasi data game
             String title = myContents.stream()
                     .filter(c -> c.getId().equals(purchase.getContentId()))
                     .findFirst()

@@ -27,7 +27,7 @@ public class AuthController {
         // Eksekusi logic register di service
         authService.register(request);
 
-        // Desain format GlobalResponse standar dengan data null
+        // Desain response
         GlobalResponse<Void> response = GlobalResponse.<Void>builder()
                 .success(true)
                 .data(null)

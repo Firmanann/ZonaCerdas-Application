@@ -28,14 +28,14 @@ public class LibraryService {
 
     public List<LibraryResponse> getMyLibrary(String email) {
 
-        // 1. Cari user login
+        //1.cari user login
         UserEntity user = userRepository.findByEmail(email)
                 .orElseThrow(() -> new BusinessException(ErrorCode.USER_NOT_FOUND));
 
-        // 2. Ambil semua riwayat pembelian dia
+        //2.ambil semua riwayat pembelian dia
         List<PurchaseEntity> purchases = purchaseRepository.findAllByUserId(user.getId());
 
-        // 3. Mapping data ke bentuk Response DTO
+        //3.mapping data ke bentuk Response DTO
         return purchases.stream().map(purchase -> {
             // Tarik detail game berdasarkan contentId di struk pembelian
             CatalogEntity catalog = catalogRepository.findById(purchase.getContentId())
@@ -54,20 +54,21 @@ public class LibraryService {
     }
 
     public PlayResponse playGame(String catalogId, String email) {
-        // 1. Cari user
+
+        //1.cari user
         UserEntity user = userRepository.findByEmail(email)
                 .orElseThrow(() -> new BusinessException(ErrorCode.USER_NOT_FOUND));
 
-        // 2. Cari game
+        //2.cari game
         CatalogEntity catalog = catalogRepository.findById(UUID.fromString(catalogId))
                 .orElseThrow(() -> new BusinessException(ErrorCode.GAME_NOT_FOUND));
 
-        // 3. Validasi Kepemilikan (Ini penting banget!)
+        //3.validasi Kepemilikan (Ini penting banget!)
         if (!purchaseRepository.existsByUserIdAndContentId(user.getId(), catalog.getId())) {
             throw new BusinessException(ErrorCode.NOT_OWNED);
         }
 
-        // 4. Return URL
+        //4.return URL
         return PlayResponse.builder()
                 .fileUrl(catalog.getFileUrl())
                 .build();
@@ -75,20 +76,20 @@ public class LibraryService {
 
     public DownloadResponse downloadGame(String catalogId, String email) {
 
-        // 1. Cari user
+        //1.cari user
         UserEntity user = userRepository.findByEmail(email)
                 .orElseThrow(() -> new BusinessException(ErrorCode.USER_NOT_FOUND));
 
-        // 2. Cari game
+        //2. cari game
         CatalogEntity catalog = catalogRepository.findById(UUID.fromString(catalogId))
                 .orElseThrow(() -> new BusinessException(ErrorCode.GAME_NOT_FOUND));
 
-        // 3. Validasi Kepemilikan (Tetep wajib!)
+        //3.validasi data
         if (!purchaseRepository.existsByUserIdAndContentId(user.getId(), catalog.getId())) {
             throw new BusinessException(ErrorCode.NOT_OWNED);
         }
 
-        // 4. Return URL
+        //4.return URL
         return DownloadResponse.builder()
                 .downloadUrl(catalog.getFileUrl())
                 .build();

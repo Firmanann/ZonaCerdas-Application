@@ -24,7 +24,8 @@ public class LibraryController {
 
     @GetMapping
     public ResponseEntity<GlobalResponse<List<LibraryResponse>>> getMyLibrary(Principal principal) {
-        // Tarik data library berdasarkan email user dari token JWT
+
+        //ambil data dengan jwt
         List<LibraryResponse> data = libraryService.getMyLibrary(principal.getName());
 
         GlobalResponse<List<LibraryResponse>> response = GlobalResponse.<List<LibraryResponse>>builder()
